@@ -1,13 +1,14 @@
 use std::io;
-use std::mem::{transmute};
 
 #[deriving(PartialEq,Show)]
-enum Player {
+enum Player{
     X,
     O
 }
 
-struct Board([[Option<Player>,..3],..3]);
+struct Board{
+    board : [[Option<Player>,..3],..3]
+}
 
 fn all_same(a:Option<Player>, b:Option<Player>, c:Option<Player>) -> bool{
     if a.is_none() || b.is_none() || c.is_none(){
@@ -20,16 +21,15 @@ fn all_same(a:Option<Player>, b:Option<Player>, c:Option<Player>) -> bool{
 
 impl Board {
     fn new() -> Board{
-        Board([[None,None,None]
-              ,[None,None,None]
-              ,[None,None,None]
-              ])
+        Board { board : [[None,None,None]
+                        ,[None,None,None]
+                        ,[None,None,None]
+                        ]
+        }
     }
 
     fn all_filled(&self) -> bool{
-        let &Board(arr) = self;
-
-        for row in arr.iter(){
+        for row in self.board.iter(){
             for slot in row.iter(){
                 if slot.is_none(){
                     return false;
@@ -41,15 +41,14 @@ impl Board {
     }
 
     fn winner(&self) -> Option<Player>{
-        let &Board(arr) = self;
-
         //check rows 
-        for row in arr.iter(){
+        for row in self.board.iter(){
             if all_same(row[0], row[1], row[2]){
                 return row[2];
             }
         }
 
+        let arr = self.board;
         //check columns
         for i in range(0u,3){
             if all_same(arr[0][i], arr[1][i],arr[2][i]){
@@ -71,8 +70,7 @@ impl Board {
     }
 
     fn print_board(&self){
-        let &Board(arr) = self;
-        for row in arr.iter(){
+        for row in self.board.iter(){
             for slot in row.iter(){
                 if slot.is_none(){
                     print!("E");
@@ -87,13 +85,11 @@ impl Board {
     }
 
     fn taken(&self, row:uint, col:uint) -> bool{
-        let &Board(arr) = self;
-        arr[row][col].is_some()
+        self.board[row][col].is_some()
     }
 
     fn set(&mut self, row:uint, col:uint, player:Player){
-        let arr = unsafe {transmute::<&mut Board, &mut [[Option<Player>, ..3],..3]>(self)};
-        arr[row][col] = Some(player);
+        self.board[row][col] = Some(player);
     }
 
     fn get_player_input(&mut self, player:Player) -> Option<Player>{
