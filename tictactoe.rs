@@ -29,33 +29,38 @@ impl Board {
 
         for row in arr.iter(){
             for slot in row.iter(){
-                if slot.is_none() {
+                if slot.is_none(){
                     return false;
                 }
             }
         }
+
         return true;
     }
 
     fn winner(&self) -> Option<Player>{
         let &Board(arr) = self;
 
+        //check rows 
         for row in arr.iter(){
             if all_same(row[0], row[1], row[2]){
                 return row[2];
             }
         }
 
+        //check columns
         for i in range(0u,3){
             if all_same(arr[0][i], arr[1][i],arr[2][i]){
                 return arr[2][i];
             }
         }
 
+        //check top left to bottom right diagonal
         if all_same(arr[0][0],arr[1][1],arr[2][2]){
             return arr[2][2];
         }
 
+        //check bottom left to top right diagonal
         if all_same(arr[0][2],arr[1][1],arr[2][0]){
             return arr[2][0];
         }
@@ -74,6 +79,7 @@ impl Board {
                     print!("{}", slot.unwrap());
                 }
             }
+
             print!("\n");
         }
     }
@@ -93,8 +99,10 @@ impl Board {
         loop {
             print!("Player {} where do you want to put your marker (row column): ", player);
             let input = reader.read_line().unwrap();
+
             let row = input.as_slice().char_at(0).to_digit(3).unwrap();
             let col = input.as_slice().char_at(2).to_digit(3).unwrap();
+
             if self.taken(row, col){
                 println!("This spot is not empty. Try again.");
             }
@@ -108,6 +116,7 @@ impl Board {
 
     fn run_game_iteration(&mut self, player:Player) -> bool{
         self.print_board();
+
         if self.get_player_input(player).is_some(){
             println!("Congratulations player {}. You won!", player);
             self.print_board();
@@ -119,11 +128,13 @@ impl Board {
                 return true;
             }
         }
+
         return false;
     }
 
     fn run_game(){
         let mut board = Board::new();
+
         loop {
             if board.run_game_iteration(X){
                 break;
