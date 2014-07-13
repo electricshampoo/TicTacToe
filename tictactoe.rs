@@ -9,12 +9,27 @@ enum Player {
 
 struct Board([[Option<Player>,..3],..3]);
 
+fn all_same(a:Option<Player>, b:Option<Player>, c:Option<Player>) -> bool{
+    if a.is_none() || b.is_none() || c.is_none(){
+        return false;
+    }
+    a.unwrap() == b.unwrap() && b.unwrap() == c.unwrap()
+}
+
 impl Board {
+    fn new() -> Board{
+        Board([[None,None,None]
+              ,[None,None,None]
+              ,[None,None,None]
+              ])
+    }
+
     fn all_filled(&self) -> bool{
         let &Board(arr) = self;
+
         for row in arr.iter(){
-            for column in row.iter(){
-                if column.is_none() {
+            for slot in row.iter(){
+                if slot.is_none() {
                     return false;
                 }
             }
@@ -22,33 +37,26 @@ impl Board {
         return true;
     }
 
-    fn all_same(a:Option<Player>, b:Option<Player>, c:Option<Player>) -> bool{
-        if a.is_none() || b.is_none() || c.is_none(){
-            return false;
-        }
-        a.unwrap() == b.unwrap() && b.unwrap() == c.unwrap()
-    }
-
     fn winner(&self) -> Option<Player>{
         let &Board(arr) = self;
 
         for row in arr.iter(){
-            if Board::all_same(row[0], row[1], row[2]){
-                return row[0];
+            if all_same(row[0], row[1], row[2]){
+                return row[2];
             }
         }
 
         for i in range(0u,3){
-            if Board::all_same(arr[0][i], arr[1][i],arr[2][i]){
-                return arr[0][i];
+            if all_same(arr[0][i], arr[1][i],arr[2][i]){
+                return arr[2][i];
             }
         }
 
-        if Board::all_same(arr[0][0],arr[1][1],arr[2][2]){
+        if all_same(arr[0][0],arr[1][1],arr[2][2]){
             return arr[2][2];
         }
 
-        if Board::all_same(arr[0][2],arr[1][1],arr[2][0]){
+        if all_same(arr[0][2],arr[1][1],arr[2][0]){
             return arr[2][0];
         }
 
@@ -58,12 +66,12 @@ impl Board {
     fn print_board(&self){
         let &Board(arr) = self;
         for row in arr.iter(){
-            for column in row.iter(){
-                if column.is_none(){
+            for slot in row.iter(){
+                if slot.is_none(){
                     print!("E");
                 }
                 else {
-                    print!("{}", column.unwrap());
+                    print!("{}", slot.unwrap());
                 }
             }
             print!("\n");
@@ -97,42 +105,36 @@ impl Board {
         }
         self.winner()
     }
-}
 
-
-
-fn main(){
-
-    let mut board = Board([[None,None,None]
-                          ,[None,None,None]
-                          ,[None,None,None]
-                          ]);
-
-    loop {
-        board.print_board();
-        if board.get_player_input(X).is_some(){
-            println!("Congratulations player X. You won!");
-            board.print_board();
-            break;
+    fn run_game_iteration(&mut self, player:Player) -> bool{
+        self.print_board();
+        if self.get_player_input(player).is_some(){
+            println!("Congratulations player {}. You won!", player);
+            self.print_board();
+            return true;
         }
         else{
-            if board.all_filled(){
+            if self.all_filled(){
                 println!("The game was a tie.");
-                break;
+                return true;
             }
         }
+        return false;
+    }
 
-        board.print_board();
-        if board.get_player_input(O).is_some(){
-            println!("Congratulations player O. You won!");
-            board.print_board();
-            break;
-        }
-        else {
-            if board.all_filled(){
-                println!("The game was a tie.");
+    fn run_game(){
+        let mut board = Board::new();
+        loop {
+            if board.run_game_iteration(X){
+                break;
+            }
+            if board.run_game_iteration(O){
                 break;
             }
         }
     }
+}
+
+fn main(){
+    Board::run_game();
 }
