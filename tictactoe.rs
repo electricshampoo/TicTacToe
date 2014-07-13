@@ -11,9 +11,11 @@ struct Board([[Option<Player>,..3],..3]);
 
 fn all_same(a:Option<Player>, b:Option<Player>, c:Option<Player>) -> bool{
     if a.is_none() || b.is_none() || c.is_none(){
-        return false;
+        false
     }
-    a.unwrap() == b.unwrap() && b.unwrap() == c.unwrap()
+    else {
+        a.unwrap() == b.unwrap() && b.unwrap() == c.unwrap()
+    }
 }
 
 impl Board {
@@ -35,7 +37,7 @@ impl Board {
             }
         }
 
-        return true;
+        true
     }
 
     fn winner(&self) -> Option<Player>{
@@ -65,7 +67,7 @@ impl Board {
             return arr[2][0];
         }
 
-        return None;
+        None
     }
 
     fn print_board(&self){
@@ -111,6 +113,7 @@ impl Board {
                 break;
             }
         }
+
         self.winner()
     }
 
@@ -129,7 +132,7 @@ impl Board {
             }
         }
 
-        return false;
+        false
     }
 
     fn run_game(){
