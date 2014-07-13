@@ -11,11 +11,9 @@ struct Board{
 }
 
 fn all_same(a:Option<Player>, b:Option<Player>, c:Option<Player>) -> bool{
-    if a.is_none() || b.is_none() || c.is_none(){
-        false
-    }
-    else {
-        a.unwrap() == b.unwrap() && b.unwrap() == c.unwrap()
+    match (a, b, c) {
+        (Some(a), Some(b), Some(c)) if (a == b && b == c) => true,
+        _ => false
     }
 }
 
