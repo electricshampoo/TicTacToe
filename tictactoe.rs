@@ -12,7 +12,7 @@ struct Board{
 
 fn all_same(a:Option<Player>, b:Option<Player>, c:Option<Player>) -> bool{
     match (a, b, c) {
-        (Some(a), Some(b), Some(c)) if (a == b && b == c) => true,
+        (Some(a), Some(b), Some(c)) if a == b && b == c => true,
         _ => false
     }
 }
@@ -27,15 +27,9 @@ impl Board {
     }
 
     fn all_filled(&self) -> bool{
-        for row in self.board.iter(){
-            for slot in row.iter(){
-                if slot.is_none(){
-                    return false;
-                }
-            }
+        self.board.iter().all(|row| {
+            row.iter().all(|slot| slot.is_some())
         }
-
-        true
     }
 
     fn winner(&self) -> Option<Player>{
@@ -70,14 +64,12 @@ impl Board {
     fn print_board(&self){
         for row in self.board.iter(){
             for slot in row.iter(){
-                if slot.is_none(){
-                    print!("E");
-                }
-                else {
-                    print!("{}", slot.unwrap());
+
+                match slot {
+                    None         => print!("E"),
+                    Some(player) => print!("{}", player)
                 }
             }
-
             print!("\n");
         }
     }
